@@ -28,6 +28,22 @@ router.post('/', (req, res) => {
     })
 })
 
+//PUTS
+router.put('/:pid', (req, res) => {
+    let product = req.body
+    console.log(product)
+    container.save(product).then((result)=> {
+        res.send(result)
+    })
+})
+
+//DELETES
+router.delete('/:pid', (req, res) => {
+    let id = parseInt(req.params.pid)
+    container.deleteById(id).then((result)=> {
+        res.send(result)
+    })
+})
 
 
 module.exports = router
