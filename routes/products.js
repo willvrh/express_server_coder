@@ -1,4 +1,5 @@
 const express = require('express')
+const upload = require('../services/upload')
 const router = express.Router()
 const Contenedor = require('../classes/contenedor.js')
 
@@ -20,8 +21,10 @@ router.get('/:pid', function(req, res) {
 })
 
 //POSTS
-router.post('/', (req, res) => {
+router.post('/', upload.single('image'), (req, res) => {
     let product = req.body
+    let thumbnail = 'http://localhost:8080/'+req.file.filename
+    product.thumbnail = thumbnail
     container.save(product).then((result)=> {
         res.send(result)
     })

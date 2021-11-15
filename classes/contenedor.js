@@ -11,7 +11,7 @@ class Contenedor {
 
     save = async (object) => {
         this.loadFromFile();
-        const requiredData = ["title", "price", "thumbnail"]
+        const requiredData = ["title", "price"]
         let validKeys = true;
         requiredData.forEach(key => { if(!Object.prototype.hasOwnProperty.call(object, key)) { validKeys = false } });
         if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
