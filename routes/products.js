@@ -22,7 +22,6 @@ router.get('/:pid', function(req, res) {
 //POSTS
 router.post('/', (req, res) => {
     let product = req.body
-    console.log(product)
     container.save(product).then((result)=> {
         res.send(result)
     })
@@ -30,9 +29,10 @@ router.post('/', (req, res) => {
 
 //PUTS
 router.put('/:pid', (req, res) => {
+    let id = parseInt(req.params.pid)
     let product = req.body
-    console.log(product)
-    container.save(product).then((result)=> {
+    product.id = id
+    container.update(product).then((result)=> {
         res.send(result)
     })
 })
