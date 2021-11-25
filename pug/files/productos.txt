@@ -1,0 +1,1 @@
+[{"title":"Notebook acer","price":"114900","thumbnail":"http://localhost:8080/1636952742562nbacer.jpg","id":1},{"title":"Bicicleta","price":"29300","thumbnail":"http://localhost:8080/1637875823993bici.png","id":2}]
