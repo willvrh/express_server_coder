@@ -1,7 +1,6 @@
 //Imports
 import express from 'express'
 import cors from 'cors'
-import {engine} from 'express-handlebars';
 import upload from './services/upload.js'
 import productsRouter from './routes/products.js'
 import Contenedor from './classes/contenedor.js'
@@ -13,9 +12,8 @@ const app = express()
 const port = process.env.PORT||8080
 const container = new Contenedor()
 
-app.engine('handlebars',engine())
 app.set('views','./views')
-app.set('view engine','handlebars')
+app.set('view engine','pug')
 
 //Config
 
@@ -39,7 +37,7 @@ app.get('/api/productos',(req,res)=>{
         let preparedObject ={
             products : data
         }
-        res.render('products',preparedObject)
+        res.render('productos',preparedObject)
     })
 })
 
