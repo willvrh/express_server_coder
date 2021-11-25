@@ -16,3 +16,13 @@ document.addEventListener('submit', event=> {
         }
     })
 })
+
+document.getElementById("image").onchange = (e)=>{
+    let read = new FileReader();
+    read.onload = e =>{
+        document.querySelector('.image-text').innerHTML = "Vista previa del producto"
+        document.getElementById("preview").src = e.target.result;
+    }
+    
+    read.readAsDataURL(e.target.files[0])
+}

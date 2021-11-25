@@ -1,12 +1,21 @@
 //Imports
-const express = require('express')
-const cors = require('cors')
-const upload = require('./services/upload')
+import express from 'express'
+import cors from 'cors'
+import {engine} from 'express-handlebars';
+import upload from './services/upload.js'
+import productsRouter from './routes/products.js'
+import Contenedor from './classes/contenedor.js'
+
+
 
 //Initialization
 const app = express()
 const port = process.env.PORT||8080
-const productsRouter = require('./routes/products')
+const container = new Contenedor()
+
+app.engine('handlebars',engine())
+app.set('views','./views')
+app.set('view engine','handlebars')
 
 //Config
 
@@ -23,6 +32,17 @@ const server = app.listen(port, () => {
 })
 
 server.on('error', error => console.log(`Error en el servidor: ${error}`))
+
+app.get('/api/productos',(req,res)=>{
+    container.getAll().then(result=>{
+        let data = result.payload;
+        let preparedObject ={
+            products : data
+        }
+        res.render('products',preparedObject)
+    })
+})
+
 
 //Routes
 app.use('/api/productos', productsRouter)
