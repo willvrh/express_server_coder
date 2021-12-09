@@ -1,38 +1,34 @@
 import fs from 'fs'
+import Contenedor from './contenedor.js';
 
-class Contenedor {
+
+class Carrito {
     
+
     constructor(){
-        this.filename = "./files/productos.txt"
+        this.filename = "./files/carrito.txt"
         this.data = []
         this.loadFromFile();
-        
+        this.container = new Contenedor();
     }
 
     save = async (object) => {
         this.loadFromFile();
-        const requiredData = ["nombre", "precio", "descripcion"]
-        let validKeys = true;
-        requiredData.forEach(key => { if(!Object.prototype.hasOwnProperty.call(object, key)) { validKeys = false } });
-        if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
         object.id = this.getNextId()
-        object.timestamp = Date.now()
+        object.timestamp = Date.now();
         this.data.push(object)
+        
         try {
             this.saveToFile()
-            return {status: "success", payload: object, productId: object.id}
+            return {status: "success", payload: object, cartID: object.id}
         } catch (e) {
-            return {error: "no se pudo guardar el producto"}
+            return {error: "no se pudo guardar el carrito"}
         }
     }
 
-    update = async (object) => {
-        const requiredData = ["nombre", "precio", "descripcion"]
-        requiredData.forEach(key => {
-            if (!object.hasOwnProperty(key)) {
-                return {error: `el producto debe tener la propiedad ${key}`}
-            }
-        });
+    addToCart = async (cartID,productID) => {
+        const product = this.container.getById(productID);
+
         this.data.forEach(product => {
             if (product.id == object.id) {
                 product.nombre = object.nombre
@@ -51,35 +47,33 @@ class Contenedor {
     }
 
     getById = async (id) => {
-        let product = this.data.find(element => element.id == id)
-        return product != undefined ? {status: "success", payload: product} : {error: 'producto no encontrado'}
-    }
-
-    getRandomItem = async () => {
-        let product = this.data[Math.floor(Math.random()*this.data.length)]
-        return product != undefined ? {status: "success", payload: product} : {error: 'producto no encontrado'}
+        this.loadFromFile();
+        let cart = this.data.find(element => element.id == id)
+        return cart != undefined ? {status: "success", payload: cart} : {error: 'carrito no encontrado'}
     }
 
     getAll = async () => {
         this.loadFromFile();
-        return this.data.length>0 ? {status: "success", payload: this.data} : {error: 'productos no encontrados'}
+        return this.data.length>0 ? {status: "success", payload: this.data} : {error: 'carritos no encontrados'}
     }
 
     deleteById = async (id) => {
-        let product = this.data.find(element => element.id == id)
-        if (product != undefined) {
+        this.loadFromFile();
+        let cart = this.data.find(element => element.id == id)
+        if (cart != undefined) {
             this.data = this.data.filter(element => element.id != id)
             this.saveToFile()
-            return {status: "success", payload: `El producto ${id} fue eliminado`}
+            return {status: "success", payload: `El carrito ${id} fue eliminado`}
         } else {
-            return {error: 'producto no encontrado'}
+            return {error: 'Carrito no encontrado'}
         }
     }
 
     deleteAll = async () => {
+        this.loadFromFile();
         this.data = []
         this.saveToFile()
-        return {status: "success", payload: `Los productos fueron eliminados`}
+        return {status: "success", payload: `Los carritos fueron eliminados`}
     }
 
     saveToFile = async () => {
@@ -97,12 +91,13 @@ class Contenedor {
             return "ok"
         } catch (err) {
             this.data = []
-            this.saveAndReload()
+            this.saveToFile()
             return err
         }
     }
 
     getNextId = () => {
+        this.loadFromFile();
         let lastId = 0
         this.data.forEach(element => {
             element.id>lastId ? lastId = element.id : false
@@ -111,4 +106,4 @@ class Contenedor {
     }
 }
 
-export default Contenedor;
+export default Carrito;

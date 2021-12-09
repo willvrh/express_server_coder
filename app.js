@@ -2,8 +2,8 @@
 import express from 'express'
 import cors from 'cors'
 import {engine} from 'express-handlebars';
-import upload from './services/upload.js'
 import productsRouter from './routes/products.js'
+import cartRouter from './routes/cart.js'
 import Contenedor from './classes/contenedor.js'
 import Chat from './classes/chat.js'
 import {Server} from 'socket.io'
@@ -14,10 +14,12 @@ import { fileURLToPath } from 'url';
 
 //Initialization
 const app = express()
-const port = process.env.PORT||8080
 const container = new Contenedor()
 const chat = new Chat()
-const __dirname = dirname(fileURLToPath(import.meta.url));
+export const port = process.env.PORT||8080
+export const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export const administrador = true;
 
 app.engine('handlebars',engine())
 app.set('views','./views')
@@ -82,5 +84,6 @@ app.get('/api/productos',(req,res)=>{
 
 //Routes
 app.use('/api/productos', productsRouter)
+app.use('/api/carrito', cartRouter)
 
 export default io

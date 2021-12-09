@@ -17,9 +17,8 @@ class Chat {
         if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
         object.id = this.getNextId()
         this.data.push(object)
-        this.saveAndReload()
         try {
-            this.saveAndReload()
+            this.saveToFile()
             return {status: "success", payload: object, productId: object.id}
         } catch (e) {
             return {error: "no se pudo guardar el mensaje"}
@@ -32,8 +31,9 @@ class Chat {
     }
 
     deleteAll = async () => {
+        this.loadFromFile();
         this.data = []
-        this.saveAndReload()
+        this.saveToFile()
         return {status: "success", payload: `Los mensajes fueron eliminados`}
     }
 
@@ -52,16 +52,13 @@ class Chat {
             return "ok"
         } catch (err) {
             this.data = []
-            this.saveAndReload()
+            this.saveToFile()
             return err
         }
     }
 
-    saveAndReload() {
-        this.saveToFile().then( this.loadFromFile() )
-    }
-
     getNextId = () => {
+        this.loadFromFile();
         let lastId = 0
         this.data.forEach(element => {
             element.id>lastId ? lastId = element.id : false

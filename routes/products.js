@@ -2,17 +2,23 @@ import express from 'express'
 import upload from '../services/upload.js'
 import Contenedor from '../classes/contenedor.js'
 import io from '../app.js'
+import administrador from '../app.js'
+import __dirname from '../app.js'
+import port from '../app.js'
+
 const router = express.Router()
 const container = new Contenedor()
 
 
 //GETS
+//Admin & user
 router.get('/', function(req, res) {
     container.getAll().then(result=>{
         res.send(result)
     })
 })
 
+//Admin & user
 router.get('/:pid', function(req, res) {
     let id = parseInt(req.params.pid)
     container.getById(id).then(result=>{
@@ -21,45 +27,61 @@ router.get('/:pid', function(req, res) {
 })
 
 //POSTS
+//Only admin 
 router.post('/', upload.single('image'), (req, res) => {
-    try {
+    if (administrador) {
+        try {
+            let product = req.body
+            let foto = __dirname+":"+port+"/"+req.file.filename
+            product.foto = foto
+            container.save(product).then((result)=> {
+                container.getAll().then(res => {
+                    io.emit('products', res)
+                })
+                res.send(result)
+            })
+        } catch (e) {
+            res.send("Error al subir archivo -> "+e)
+        }
+    } else {
+        res.send({error: "auth_error", description: `Ruta ${req.baseUrl} método ${req.method} no autorizado`})
+    }
+    
+    
+})
+
+//PUTS
+//Only admin 
+router.put('/:pid', (req, res) => {
+    if (administrador) {
+        let id = parseInt(req.params.pid)
         let product = req.body
-        let thumbnail = 'http://localhost:8080/'+req.file.filename
-        product.thumbnail = thumbnail
-        container.save(product).then((result)=> {
+        product.id = id
+        container.update(product).then((result)=> {
             container.getAll().then(res => {
                 io.emit('products', res)
             })
             res.send(result)
         })
-    } catch (e) {
-        res.send("Error al subir archivo -> "+e)
+    } else {
+        res.send({error: "auth_error", description: `Ruta ${req.baseUrl} método ${req.method} no autorizado`})
     }
-    
-})
-
-//PUTS
-router.put('/:pid', (req, res) => {
-    let id = parseInt(req.params.pid)
-    let product = req.body
-    product.id = id
-    container.update(product).then((result)=> {
-        container.getAll().then(res => {
-            io.emit('products', res)
-        })
-        res.send(result)
-    })
 })
 
 //DELETES
+//Only admin 
 router.delete('/:pid', (req, res) => {
-    let id = parseInt(req.params.pid)
-    container.deleteById(id).then((result)=> {
-        container.getAll().then(res => {
-            io.emit('products', res)
+    if (administrador) {
+        let id = parseInt(req.params.pid)
+        container.deleteById(id).then((result)=> {
+            container.getAll().then(res => {
+                io.emit('products', res)
+            })
+            res.send(result)
         })
-        res.send(result)
-    })
+    } else {
+        res.send({error: "auth_error", description: `Ruta ${req.baseUrl} método ${req.method} no autorizado`})
+    }
 })
 
 export default router
