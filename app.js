@@ -82,6 +82,6 @@ app.use('/api/carrito', cartRouter)
 
 //Router for not implemented functions
 app.get('*', function(req, res){
-    res.send({error: "not_implemented", description: `Ruta ${req.baseUrl} método ${req.method} no implementada`});
+    res.send({error: "not_implemented", description: `Ruta ${req.url} método ${req.method} no implementada`});
 })
 export { io, __dirname, administrador, port }
