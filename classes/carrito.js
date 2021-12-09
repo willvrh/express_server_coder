@@ -12,44 +12,60 @@ class Carrito {
         this.container = new Contenedor();
     }
 
-    save = async (object) => {
+    save = async (cart) => {
         this.loadFromFile();
-        object.id = this.getNextId()
-        object.timestamp = Date.now();
-        this.data.push(object)
+        cart.id = this.getNextId()
+        cart.timestamp = Date.now();
+        cart.hasOwnProperty('products')? true : cart.products = []
+        this.data.push(cart)
         
         try {
             this.saveToFile()
-            return {status: "success", payload: object, cartID: object.id}
+            return {status: "success", payload: cart, cartID: cart.id}
         } catch (e) {
-            return {error: "no se pudo guardar el carrito"}
+            return {error: "save_error", description: e}
         }
     }
 
-    addToCart = async (cartID,productID) => {
-        const product = this.container.getById(productID);
-
-        this.data.forEach(product => {
-            if (product.id == object.id) {
-                product.nombre = object.nombre
-                product.precio = object.precio
-                product.foto = object.foto
+    addToCart = async (cartID,productsID) => {
+        
+        if (!Array.isArray(productsID)) {
+            return {error: "empty_array" , description: "No se envió ningún producto"}
+        } else {
+            if (productsID.length==0) {
+                return {error: "empty_array" , description: "No se envió ningún producto"}
             }
-        });
+        }
+
+        let cart = this.data.find(element => element.id == cartID)
+        let prods = this.container.getByIds(productsID)
+        prods.payload.forEach((product) => {
+            
+            let aux = cart.products.find(element => element.id == product.id)
+            
+            if (aux === undefined) {
+                product.cantidad = 1
+                cart.products.push(product)
+            } else {
+                console.log("product qty", product.cantidad)
+                aux.cantidad += 1
+            }
+            
+        })
+        
         try {
             this.saveToFile()
-            return {status: "success", payload: object}
+            return {status: "success", payload: cart}
         } catch (e) {
-            return {error: "no se pudo actualizar el producto"}
+            return {error: "not_updated" , description: "No se actualizó el carrito"}
         }
-        
         
     }
 
     getById = async (id) => {
         this.loadFromFile();
         let cart = this.data.find(element => element.id == id)
-        return cart != undefined ? {status: "success", payload: cart} : {error: 'carrito no encontrado'}
+        return cart != undefined ? {status: "success", payload: cart} : {error: 'not_found', description: 'Carrito no encontrado'}
     }
 
     getAll = async () => {

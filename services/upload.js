@@ -2,7 +2,7 @@ import multer from 'multer'
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        if (file.fieldname==="image") {
+        if (file.fieldname==="foto") {
             cb(null, 'images')
         } else {
             cb(null, 'public')

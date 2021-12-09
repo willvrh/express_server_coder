@@ -65,13 +65,17 @@ document.addEventListener('submit', event=> {
         if (json["status"]=="success") {
             alert("Se agregó el producto")
             //document.getElementById("thumbnail").value = "";
-            document.getElementById("title").value = "";
-            document.getElementById("price").value = "";
+            document.getElementById("nombre").value = "";
+            document.getElementById("precio").value = "0";
+            document.getElementById("codigo").value = "";
+            document.getElementById("descripcion").value = "";
+            document.getElementById("stock").value = "0";
+            document.getElementById("preview").src = "";
         }
     })
 })
 
-document.getElementById("image").onchange = (e)=>{
+document.getElementById("foto").onchange = (e)=>{
     let read = new FileReader();
     read.onload = e =>{
         //document.querySelector('.image-text').innerHTML = "Vista previa del producto"

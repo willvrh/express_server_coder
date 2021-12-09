@@ -17,11 +17,13 @@ class Contenedor {
         if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
         object.id = this.getNextId()
         object.timestamp = Date.now()
+        Object.prototype.hasOwnProperty.call(object, "codigo")? true : object.codigo = ""
         this.data.push(object)
         try {
             this.saveToFile()
             return {status: "success", payload: object, productId: object.id}
         } catch (e) {
+            
             return {error: "no se pudo guardar el producto"}
         }
     }
@@ -37,6 +39,8 @@ class Contenedor {
             if (product.id == object.id) {
                 product.nombre = object.nombre
                 product.precio = object.precio
+                product.descripcion = object.descripcion
+                product.codigo = object.codigo
                 product.foto = object.foto
             }
         });
@@ -52,7 +56,16 @@ class Contenedor {
 
     getById = async (id) => {
         let product = this.data.find(element => element.id == id)
-        return product != undefined ? {status: "success", payload: product} : {error: 'producto no encontrado'}
+        return product != undefined ? {status: "success", payload: product} : {error: 'not_found', description: 'Productos no encontrado'}
+    }
+
+    getByIds = (ids) => {
+        let products = []
+        ids.forEach(id => {
+            products.push(this.data.find(element => element.id == id))
+        });
+        
+        return products.length>0 ? {status: "success", payload: products} : {error: 'not_found', description: 'Productos no encontrado'}
     }
 
     getRandomItem = async () => {
@@ -97,7 +110,7 @@ class Contenedor {
             return "ok"
         } catch (err) {
             this.data = []
-            this.saveAndReload()
+            this.saveToFile()
             return err
         }
     }

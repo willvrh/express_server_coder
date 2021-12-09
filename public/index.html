@@ -24,14 +24,23 @@
                 <p><b>Registrar nuevo producto</b></p>
                 <div class="row">
                     <div class="col-6">
-                        <label for="title">Título</label><br>
-                        <input id="title" name="title" required><br>
+                        <label for="title">Nombre</label><br>
+                        <input id="nombre" name="nombre" required><br>
 
-                        <label for="price">Precio</label><br>
-                        <input id="price" type="number" name="price" required><br>
+                        <label for="descripcion">Descripción</label><br>
+                        <input id="descripcion" name="descripcion" required><br>
 
-                        <label for="image">Foto del producto</label><br>
-                        <input type="file" id="image" name="image" accept="image/png, image/jpeg">
+                        <label for="codigo">Código</label><br>
+                        <input id="codigo" name="codigo" required><br>
+
+                        <label for="precio">Precio</label><br>
+                        <input id="precio" type="number" name="precio" value="0" required><br>
+
+                        <label for="stock">Stock</label><br>
+                        <input id="stock" type="number" name="stock" value="0" required><br>
+
+                        <label for="foto">Foto del producto</label><br>
+                        <input type="file" id="foto" name="foto" accept="image/png, image/jpeg">
                     </div>
                     <div class="col-6">
                         <div style="display:flex">

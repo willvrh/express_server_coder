@@ -1,8 +1,6 @@
 import express from 'express'
 import Carrito from '../classes/carrito.js'
-import io from '../app.js'
-import administrador from '../app.js'
-import __dirname from '../app.js'
+import { io, administrador, __dirname } from '../app.js'
 
 const router = express.Router()
 
@@ -12,8 +10,14 @@ const cart = new Carrito()
 //Admin & user
 router.get('/:cartid/productos', function(req, res) {
     let id = parseInt(req.params.cartid)
+    
     cart.getById(id).then(result=>{
+        console.log("result", result)
+        result.hasOwnProperty('error')? 
+        res.send(result)
+        :
         res.send({status: "success", payload: result.payload.products})
+        
     })
 })
 
@@ -28,7 +32,7 @@ router.post('/', (req, res) => {
 
 router.post('/:cartid/productos', (req, res) => {
     let cartID = parseInt(req.params.cartid)
-    let productsID = req.body
+    let productsID = req.body.ids
     cart.addToCart(cartID, productsID).then((result)=> {
         res.send(result)
     })
@@ -54,18 +58,11 @@ router.put('/:cartid/productos', (req, res) => {
 
 //DELETES
 //Only admin 
-router.delete('/:pid', (req, res) => {
-    if (administrador) {
-        let id = parseInt(req.params.pid)
-        container.deleteById(id).then((result)=> {
-            container.getAll().then(res => {
-                io.emit('products', res)
-            })
-            res.send(result)
-        })
-    } else {
-        res.send({error: "auth_error", description: "Ruta / método POST no autorizado"})
-    }
+router.delete('/:cartid', (req, res) => {
+    let id = parseInt(req.params.cartid)
+    cart.deleteById(id).then((result)=> {
+        res.send(result)
+    })
 })
 
 export default router

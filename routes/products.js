@@ -1,10 +1,7 @@
 import express from 'express'
 import upload from '../services/upload.js'
 import Contenedor from '../classes/contenedor.js'
-import io from '../app.js'
-import administrador from '../app.js'
-import __dirname from '../app.js'
-import port from '../app.js'
+import { io, administrador, port, __dirname } from '../app.js'
 
 const router = express.Router()
 const container = new Contenedor()
@@ -28,11 +25,11 @@ router.get('/:pid', function(req, res) {
 
 //POSTS
 //Only admin 
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', upload.single('foto'), (req, res) => {
     if (administrador) {
         try {
             let product = req.body
-            let foto = __dirname+":"+port+"/"+req.file.filename
+            let foto = __dirname+"\\images\\"+req.file.filename
             product.foto = foto
             container.save(product).then((result)=> {
                 container.getAll().then(res => {

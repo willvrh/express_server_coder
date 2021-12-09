@@ -16,10 +16,10 @@ import { fileURLToPath } from 'url';
 const app = express()
 const container = new Contenedor()
 const chat = new Chat()
-export const port = process.env.PORT||8080
-export const __dirname = dirname(fileURLToPath(import.meta.url));
+const port = process.env.PORT||8080
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export const administrador = true;
+const administrador = true;
 
 app.engine('handlebars',engine())
 app.set('views','./views')
@@ -86,4 +86,4 @@ app.get('/api/productos',(req,res)=>{
 app.use('/api/productos', productsRouter)
 app.use('/api/carrito', cartRouter)
 
-export default io
+export { io, __dirname, administrador, port }
