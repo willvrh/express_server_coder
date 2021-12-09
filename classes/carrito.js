@@ -47,11 +47,28 @@ class Carrito {
                 product.cantidad = 1
                 cart.products.push(product)
             } else {
-                console.log("product qty", product.cantidad)
                 aux.cantidad += 1
             }
             
         })
+        
+        try {
+            this.saveToFile()
+            return {status: "success", payload: cart}
+        } catch (e) {
+            return {error: "not_updated" , description: "No se actualizó el carrito"}
+        }
+        
+    }
+
+    removeFromCart = async (cartID,productID) => {
+        
+        if (productID === undefined) {
+            return {error: "empty_id" , description: "No se envió ningún id"}
+        }
+
+        let cart = this.data.find(element => element.id == cartID)
+        cart.products = cart.products.filter(product => product.id!=productID);
         
         try {
             this.saveToFile()

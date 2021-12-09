@@ -59,8 +59,16 @@ router.put('/:cartid/productos', (req, res) => {
 //DELETES
 //Only admin 
 router.delete('/:cartid', (req, res) => {
-    let id = parseInt(req.params.cartid)
-    cart.deleteById(id).then((result)=> {
+    let cartID = parseInt(req.params.cartid)
+    cart.deleteById(cartID).then((result)=> {
+        res.send(result)
+    })
+})
+
+router.delete('/:cartid/productos/:productid', (req, res) => {
+    let cartID = parseInt(req.params.cartid)
+    let productID = parseInt(req.params.productid)
+    cart.removeFromCart(cartID,productID).then((result)=> {
         res.send(result)
     })
 })

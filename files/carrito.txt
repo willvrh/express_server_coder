@@ -1,1 +1,1 @@
-[{"ids":[1],"id":1,"timestamp":1639086351318,"products":[{"nombre":"Notebook acer","descripcion":"notebook gamer","codigo":"nbgmac","precio":"27400","stock":"10","foto":"C:\\coderhouse\\express_server_coder\\images\\1639085920519nbacer.jpg","id":1,"timestamp":1639085920530,"cantidad":12}]}]
+[{"id":1,"timestamp":1639090137469,"products":[]}]

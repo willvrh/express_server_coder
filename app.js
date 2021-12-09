@@ -21,17 +21,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const administrador = true;
 
-app.engine('handlebars',engine())
-app.set('views','./views')
-app.set('view engine','handlebars')
 
 //Config
-
-//app.use(upload.single('image'))
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 app.use(cors())
-app.use(express.static(__dirname+'/public'))
 app.use(express.static(__dirname+'/images'))
 
 
@@ -86,4 +80,8 @@ app.get('/api/productos',(req,res)=>{
 app.use('/api/productos', productsRouter)
 app.use('/api/carrito', cartRouter)
 
+//Router for not implemented functions
+app.get('*', function(req, res){
+    res.send({error: "not_implemented", description: `Ruta ${req.baseUrl} método ${req.method} no implementada`});
+})
 export { io, __dirname, administrador, port }
