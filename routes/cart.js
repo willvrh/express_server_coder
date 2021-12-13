@@ -25,6 +25,7 @@ router.get('/:cartid/productos', function(req, res) {
 //Admin & user
 router.post('/', (req, res) => {
     let newCart = req.body
+    console.log(newCart);
     cart.save(newCart).then((result)=> {
         res.send(result)
     })
@@ -36,24 +37,6 @@ router.post('/:cartid/productos', (req, res) => {
     cart.addToCart(cartID, productsID).then((result)=> {
         res.send(result)
     })
-})
-
-//PUTS
-//Only admin 
-router.put('/:cartid/productos', (req, res) => {
-    if (administrador) {
-        let id = parseInt(req.params.cartid)
-        let product = req.body
-        product.id = id
-        container.update(product).then((result)=> {
-            container.getAll().then(res => {
-                io.emit('products', res)
-            })
-            res.send(result)
-        })
-    } else {
-        res.send({error: "auth_error", description: "Ruta / método POST no autorizado"})
-    }
 })
 
 //DELETES

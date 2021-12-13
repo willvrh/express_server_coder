@@ -2,6 +2,7 @@ import express from 'express'
 import upload from '../services/upload.js'
 import Contenedor from '../classes/contenedor.js'
 import { io, administrador, port, __dirname } from '../app.js'
+import fs from 'fs'
 
 const router = express.Router()
 const container = new Contenedor()
@@ -32,6 +33,9 @@ router.post('/', upload.single('foto'), (req, res) => {
             let foto = __dirname+"\\images\\"+req.file.filename
             product.foto = foto
             container.save(product).then((result)=> {
+                //Delete image file if failed
+                if (result.status == "failed") try { fs.unlinkSync(foto) } catch(err) { console.error(err) }
+                
                 container.getAll().then(res => {
                     io.emit('products', res)
                 })

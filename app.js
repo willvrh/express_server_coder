@@ -1,7 +1,6 @@
 //Imports
 import express from 'express'
 import cors from 'cors'
-import {engine} from 'express-handlebars';
 import productsRouter from './routes/products.js'
 import cartRouter from './routes/cart.js'
 import Contenedor from './classes/contenedor.js'
@@ -62,17 +61,6 @@ io.on('connection', socket => {
         })
     })
     
-})
-
-
-app.get('/api/productos',(req,res)=>{
-    container.getAll().then(result=>{
-        let data = result.payload;
-        let preparedObject ={
-            products : data
-        }
-        res.render('products',preparedObject)
-    })
 })
 
 

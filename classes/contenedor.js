@@ -11,20 +11,23 @@ class Contenedor {
 
     save = async (object) => {
         this.loadFromFile();
-        const requiredData = ["nombre", "precio", "descripcion"]
+        const requiredData = ["nombre", "precio", "descripcion", "codigo"]
         let validKeys = true;
         requiredData.forEach(key => { if(!Object.prototype.hasOwnProperty.call(object, key)) { validKeys = false } });
-        if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
+        if (!validKeys) { return {status: "failed", error: "missing_fields", description: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
         object.id = this.getNextId()
         object.timestamp = Date.now()
-        Object.prototype.hasOwnProperty.call(object, "codigo")? true : object.codigo = ""
+
+        //Checks for existing code
+        let productoExiste = this.getByCode(object.codigo);
+        if (productoExiste.status == "success") return {status: "failed", error: "existing_code", description: `El código ${object.codigo} ya se encuentra registrado`}
+
         this.data.push(object)
         try {
             this.saveToFile()
             return {status: "success", payload: object, productId: object.id}
         } catch (e) {
-            
-            return {error: "no se pudo guardar el producto"}
+            return {status: "failed", error: "cant_save", error: "No se pudo guardar el producto"}
         }
     }
 
@@ -32,7 +35,7 @@ class Contenedor {
         const requiredData = ["nombre", "precio", "descripcion"]
         requiredData.forEach(key => {
             if (!object.hasOwnProperty(key)) {
-                return {error: `el producto debe tener la propiedad ${key}`}
+                return {status: "failed", error: "missing_field", description: `El producto debe tener la propiedad ${key}`}
             }
         });
         this.data.forEach(product => {
@@ -48,7 +51,7 @@ class Contenedor {
             this.saveToFile()
             return {status: "success", payload: object}
         } catch (e) {
-            return {error: "no se pudo actualizar el producto"}
+            return {status: "failed", error: "cant_save", description: "No se pudo actualizar el producto"}
         }
         
         
@@ -56,26 +59,32 @@ class Contenedor {
 
     getById = async (id) => {
         let product = this.data.find(element => element.id == id)
-        return product != undefined ? {status: "success", payload: product} : {error: 'not_found', description: 'Productos no encontrado'}
+        return product != undefined ? {status: "success", payload: product} : {status: "failed", error: 'not_found', description: 'Producto no encontrado'}
+    }
+
+    getByCode = (code) => {
+        let product = this.data.find(element => element.codigo == code)
+        return product != undefined ? {status: "success", payload: product} : {status: "failed", error: 'not_found', description: 'Producto no encontrado'}
     }
 
     getByIds = (ids) => {
         let products = []
         ids.forEach(id => {
-            products.push(this.data.find(element => element.id == id))
+            let productAdd = this.data.find(element => element.id == id)
+            productAdd !== undefined ? products.push(productAdd) : true
         });
         
-        return products.length>0 ? {status: "success", payload: products} : {error: 'not_found', description: 'Productos no encontrado'}
+        return {status: "success", payload: products}
     }
 
     getRandomItem = async () => {
         let product = this.data[Math.floor(Math.random()*this.data.length)]
-        return product != undefined ? {status: "success", payload: product} : {error: 'producto no encontrado'}
+        return product != undefined ? {status: "success", payload: product} : {status: "failed", error: 'producto no encontrado'}
     }
 
     getAll = async () => {
         this.loadFromFile();
-        return this.data.length>0 ? {status: "success", payload: this.data} : {error: 'productos no encontrados'}
+        return this.data.length>0 ? {status: "success", payload: this.data} : {status: "failed", error: 'productos no encontrados'}
     }
 
     deleteById = async (id) => {
@@ -85,7 +94,7 @@ class Contenedor {
             this.saveToFile()
             return {status: "success", payload: `El producto ${id} fue eliminado`}
         } else {
-            return {error: 'producto no encontrado'}
+            return {status: "failed", error: "not_found", description: 'producto no encontrado'}
         }
     }
 
