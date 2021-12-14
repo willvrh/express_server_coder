@@ -8,7 +8,7 @@ socket.on('products', data => {
 socket.on('messagelog', data => {
     let p = document.getElementById("chatContainer")
     let messages = data.map((msg) => {
-        return `<div><span><b style='color: blue'>${msg.email}</b> <span style='color: brown'>${msg.timestamp}</span>: <i style='color: green'>${msg.message}</i></span></div>`
+        return `<div><span><b style='color: blue'>${msg.email}</b> <span style='color: brown'>${msg.created_at}</span>: <i style='color: green'>${msg.message}</i></span></div>`
     }).join('')
     p.innerHTML = messages
     scrollToBottom('chatContainer')
@@ -36,7 +36,7 @@ input.addEventListener('keyup', (e) => {
             })
             return
         }
-        socket.emit('message', {email: email.value, timestamp: new Date().toLocaleString(), message: e.target.value})
+        socket.emit('message', {email: email.value, message: e.target.value})
         input.value = ""
     }
 })

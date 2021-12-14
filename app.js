@@ -1,23 +1,22 @@
 //Imports
 import express from 'express'
+import __dirname from './utils.js';
 import cors from 'cors'
 import {engine} from 'express-handlebars';
 import upload from './services/upload.js'
 import productsRouter from './routes/products.js'
-import Contenedor from './classes/contenedor.js'
-import Chat from './classes/chat.js'
+import Products from './services/products.js';
+//import Chat from './classes/chat.js'
 import {Server} from 'socket.io'
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
+import Chat from './services/chat.js';
 
 
 //Initialization
 const app = express()
 const port = process.env.PORT||8080
-const container = new Contenedor()
+const container = new Products()
 const chat = new Chat()
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.engine('handlebars',engine())
 app.set('views','./views')
@@ -54,14 +53,14 @@ io.on('connection', socket => {
     })
 
     //Load all messages on connect
-    chat.getAll().then(res => {
+    chat.getMessages().then(res => {
         socket.emit('messagelog', res.payload)
     })
 
     //Send new message to all sockets
     socket.on('message', data => {
-        chat.save({socketID:socket.id, ...data})
-        chat.getAll().then(res => {
+        chat.saveMessage({socket_id:socket.id, ...data})
+        chat.getMessages().then(res => {
             io.emit('messagelog', res.payload)
         })
     })
