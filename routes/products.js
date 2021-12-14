@@ -1,9 +1,9 @@
 import express from 'express'
 import upload from '../services/upload.js'
-import Contenedor from '../classes/contenedor.js'
+import Products from '../services/products.js'
 import io from '../app.js'
 const router = express.Router()
-const container = new Contenedor()
+const container = new Products()
 
 
 //GETS

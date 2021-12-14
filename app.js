@@ -6,7 +6,6 @@ import {engine} from 'express-handlebars';
 import upload from './services/upload.js'
 import productsRouter from './routes/products.js'
 import Products from './services/products.js';
-//import Chat from './classes/chat.js'
 import {Server} from 'socket.io'
 
 import Chat from './services/chat.js';

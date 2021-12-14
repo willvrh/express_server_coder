@@ -17,6 +17,43 @@ export default class Products{
         })
     }
 
+    save = async (product) =>{
+        try{
+            const requiredData = ["title", "price"]
+            let validKeys = true;
+            requiredData.forEach(key => { if(!Object.prototype.hasOwnProperty.call(product, key)) { validKeys = false } });
+            if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
+            
+            let exists = await database.table('products').select().where('title',product.title).first();
+            if(exists) return {status:"error",message:"El producto ya existe"}
+            let result = await database.table('products').insert(product)
+            return {status:"success",payload:`Producto registrado con id: ${result[0]}`}
+        }catch(error){
+            console.log(error);
+            return {status:"error", message:error}
+        }
+    }
+
+    update = async (product) =>{
+        try{
+            const requiredData = ["id", "title", "price"]
+            let validKeys = true;
+            requiredData.forEach(key => { if(!Object.prototype.hasOwnProperty.call(product, key)) { validKeys = false } });
+            if (!validKeys) { return {error: 'El producto debe contener los siguientes campos: '+requiredData.toString()}}
+            
+            let exists = await database.table('products').select().where('title',product.title).first();
+            if(!exists) return {status:"error",message:"El producto no existe"}
+
+
+            
+            let result = await database.table("products").update(product).where("id", product.id)
+            return {status:"success",payload:`Producto actualizado: ${result[0]}`}
+        }catch(error){
+            console.log(error);
+            return {status:"error", message:error}
+        }
+    }
+
     getAll = async () =>{
         try{
             let products = await database.select().table('products');
@@ -26,26 +63,30 @@ export default class Products{
         }
     }
 
-    getMessageByID = async (id) =>{
+    getByID = async (id) =>{
         try{
-            let message = await database.select().table('chat').where('id',id).first();
-            if(message){
-                return {status:"success",payload:message}
+            let product = await database.select().table('productos').where('id',id).first();
+            if(product){
+                return {status:"success",payload:product}
             }else{
-                return {status:"error",message:"Mensaje no encontrado"}
+                return {status:"error",message:"Producto no encontrado"}
             }
         }catch(error){
             return {status:"error",message:error}
         }
     }
 
-    saveMessage = async (message) =>{
+    deleteByID = async (id) =>{
         try{
-            let result = await database.table('chat').insert(message)
-            return {status:"success",payload:`Mensaje registrado con id: ${result[0]}`}
+            let product = await database.table('productos').where('id', id).del()
+            if(product){
+                return {status:"success",payload:"Producto eliminado"}
+            }else{
+                return {status:"error",message:"Producto no eliminado"}
+            }
         }catch(error){
-            console.log(error);
-            return {status:"error", message:error}
+            return {status:"error",message:error}
         }
     }
+
 }
