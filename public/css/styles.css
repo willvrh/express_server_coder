@@ -12,6 +12,13 @@
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
 }
 
+.avatar {
+  vertical-align: middle;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
 .form{
   padding-top:25px;
   

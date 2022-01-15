@@ -52,15 +52,16 @@ io.on('connection', socket => {
     })
 
     //Load all messages on connect
-    chat.getMessages().then(res => {
-        socket.emit('messagelog', res.payload)
+    chat.getMessagesNormalized().then(res => {
+        socket.emit('messagelog', res)
     })
 
     //Send new message to all sockets
     socket.on('message', data => {
         chat.saveMessage({socket_id:socket.id, ...data})
-        chat.getMessages().then(res => {
-            io.emit('messagelog', res.payload)
+        
+        chat.getMessagesNormalized().then(res => {
+            io.emit('messagelog', res)
         })
     })
     
@@ -77,6 +78,13 @@ app.get('/api/productos',(req,res)=>{
     })
 })
 
+app.get('/api/productos-test',(req,res)=>{
+    let data = container.getFakeProducts(5).payload;
+    let preparedObject ={
+        products : data
+    }
+    res.render('products',preparedObject)
+})
 
 //Routes
 app.use('/api/productos', productsRouter)

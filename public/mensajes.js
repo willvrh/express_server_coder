@@ -1,17 +1,32 @@
 const socket = io()
 
-socket.on('products', data => {
-    console.log("evento productos", data)
-    loadList(data.payload)
-})
+socket.on('messagelog', normalizedData => {
+    
 
-socket.on('messagelog', data => {
+    const authors = new normalizr.schema.Entity('authors');
+    const messages = new normalizr.schema.Entity('messages', {
+        author: authors
+    });
+    const parent = new normalizr.schema.Entity('parent', {
+        messages: [messages]
+        });
+
+    const denormalizedData = normalizr.denormalize(normalizedData.payload.result, parent, normalizedData.payload.entities)    
+    let compressionPercent = 100-(JSON.stringify(normalizedData.payload).length*100)/JSON.stringify(denormalizedData).length;
+    
+    
     let p = document.getElementById("chatContainer")
+    let e = document.getElementById("comp")
+    compressionPercent = compressionPercent.toFixed(2)<0? 0:compressionPercent.toFixed(2)
+    e.innerHTML = "("+compressionPercent+"% de compresión)"
+    console.log("denormalizedData", denormalizedData)
+
+    
     try {
-        let messages = data.map((msg) => {
-                return `<div><span><b style='color: blue'>${msg.email}</b> <span style='color: brown'>${msg.created_at}</span>: <i style='color: green'>${msg.message}</i></span></div>`
+        let messagesHtml = denormalizedData.messages.map((msg) => {
+                return `<div class="mb-2 bg-light"><img src="${msg.author.avatar}" alt="Avatar" class="avatar"><b style='color: blue'>${msg.author.id}</b> <span style='color: brown'>${msg.created_at}</span>: <br><i class="ml-2"style='color: green'>${msg.text}</i></div>`
             }).join('')
-        p.innerHTML = messages
+        p.innerHTML = messagesHtml
         scrollToBottom('chatContainer')
     }catch (e) {
         console.log("error "+e)
@@ -97,45 +112,6 @@ input.addEventListener('keyup', (e) => {
     }
 })
 
-function loadList(products) {
-    fetch('http://localhost:8080/list_template.handlebars')
-    .then(response => response.text().then(function(text) {
-        let template = Handlebars.compile(text);
-        document.querySelector("#listContainer").innerHTML = template({products: products});
-      }))
-
-   
-
-}
-
-document.addEventListener('submit', event=> {
-    event.preventDefault()
-
-    let form = document.querySelector('#productForm')
-    fetch('http://localhost:8080/api/productos', {
-        method: 'POST',
-        body: new FormData(form)
-    }).then(result => {
-        return result.json()
-    }).then(json => {
-        if (json["status"]=="success") {
-            alert("Se agregó el producto")
-            //document.getElementById("thumbnail").value = "";
-            document.getElementById("title").value = "";
-            document.getElementById("price").value = "";
-        }
-    })
-})
-
-document.getElementById("image").onchange = (e)=>{
-    let read = new FileReader();
-    read.onload = e =>{
-        //document.querySelector('.image-text').innerHTML = "Vista previa del producto"
-        document.getElementById("preview").src = e.target.result;
-    }
-    
-    read.readAsDataURL(e.target.files[0])
-}
 
 function scrollToBottom (id) {
     var div = document.getElementById(id);

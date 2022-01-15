@@ -1,4 +1,6 @@
-import {database_mariadb as database} from "../config.js";
+import {database_mariadb as database} from "../config.js"
+import faker from 'faker'
+
 
 export default class Products{
     constructor(){
@@ -51,6 +53,26 @@ export default class Products{
         }catch(error){
             console.log(error);
             return {status:"error", message:error}
+        }
+    }
+
+    getFakeProducts = (qty) => {
+        try{
+            let products = []
+
+            for (let i = 0; i < qty; i++) {
+                products.push({
+                    id: faker.datatype.uuid(),
+                    title: faker.commerce.productName(),
+                    thumbnail: faker.image.business(300, 300, true),
+                    price: faker.commerce.price(100, 60000, 0, ''),
+                    created_at: faker.date.recent(),
+                    updated_at: faker.date.recent()
+                })
+            }
+            return {status:"success",payload:products}
+        }catch(error){
+            return {status:"error",message:error}
         }
     }
 
