@@ -19,7 +19,6 @@ socket.on('messagelog', normalizedData => {
     let e = document.getElementById("comp")
     compressionPercent = compressionPercent.toFixed(2)<0? 0:compressionPercent.toFixed(2)
     e.innerHTML = "("+compressionPercent+"% de compresión)"
-    console.log("denormalizedData", denormalizedData)
 
     
     try {
